@@ -34,10 +34,7 @@ void setup() {
   pinMode(MOTOR_L_B, OUTPUT);
   
   state = 0;
-  stateDirection = 0;
-  stateServo = 0;
-  stateBattery = 0;
-  upDownAngle = 0;
+
 }
 
 /********************************************************************
@@ -64,20 +61,12 @@ int fsmCollision()
   {
     case 0:  // no collision
       // in-state actions
-      doDriveStraight(TRUE)
+      doDriveStraight(TRUE);
 
       //timer to run isCollision function every 20 iterations
-      static int timer = 0;
-      if (timer >= 20){
-        // state transition logic
-        if (isCollision()==TRUE){
-          state = 1; // next state
-          // output actions
-        }
-        timer = 0;
-      }
-      else {
-        timer++;
+      if (isCollision()==TRUE){
+        state = 1; // next state
+        // output actions
       }
 
       break;
@@ -97,131 +86,6 @@ int fsmCollision()
   return(state);
 }
 
-//===================================================================
-// State machine for detecting if light is to the 
-// right or left, and steering the robot accordingly.
-int fsmDriveRobot()
-{
-  // state machine for driving robot
-  static int stateDirection=0;
-  switch (stateDirection)
-  {
-    case 0:
-      // in-state actions
-      doStopRobot(TRUE);
-
-      // state transition logic
-      if (isLightUp()==TRUE) {
-        stateDirection = 1; // next state
-        // output actions  
-        //doLeaveServo(FALSE);
-      }
-      if (isLightDown()==TRUE) {
-        stateDirection = 2;  // next state
-        // output actions  
-        //doLeaveServo(FALSE);
-      }
-      if (isLightRight()==TRUE){
-        stateDirection = 3;   // next state
-        // output actions  
-        doDriveStraight(FALSE);
-      }
-      if (isLightLeft()==TRUE){
-        stateDirection = 4;  // next state
-        // output actions  
-        doDriveStraight(FALSE); 
-      }
-      
-      break;
-
-    case 1:
-      // in-state actions
-      doMoveServoUp(TRUE);
-
-      // state transition logic
-      if (isLightUp()==FALSE) {
-        stateDirection = 0; // next state
-        // output actions  
-        doMoveServoUp(FALSE);  
-      }
-      break;
-    case 2:
-      // in-state actions
-      doMoveServoDown(TRUE);
-
-      // state transition logic
-      if (isLightDown()==FALSE) {
-        stateDirection = 0; // next state
-        // output actions  
-        doMoveServoDown(FALSE);  
-      }
-      break;
-    case 3:
-      // in-state actions
-      doCurveRight(TRUE);
-
-      // state transition logic
-      if (isLightRight()==FALSE){
-        stateDirection = 0; // next state
-        // output actions  
-        doCurveRight(FALSE);  
-      }
-      break;
-    case 4:
-      // in-state actions
-      doCurveLeft(TRUE);
-
-      // state transition logic
-      if (isLightLeft()==FALSE){
-        stateDirection = 0; // next state
-        // output actions  
-        doCurveLeft(FALSE); 
-      }
-      break;
-  }
-  return(state);
-}  
-
-int fsmBatteryMeter(){
-  switch(stateBattery){ //batter voltage monitor FSM
-    case 0: //fully charges
-      //state actions
-      doFullBattery();
-      
-      //transition logic
-      if (isMediumBattery()){
-        stateBattery = 1;
-      }
-      break;
-
-    case 1: //medium charge
-      //state actions
-      doMediumBattery();
-
-      //transition logic
-      if(isLowBattery()){
-        stateBattery = 2;
-      };
-      break;
-      
-     case 2: //low charge
-      //state actions
-      doLowBattery();
-
-      //transition logic
-      if(isEmptyBattery()){
-        stateBattery = 3;
-      };
-      break;
-      
-     case 3: //empty
-      //state actions
-      doEmptyBattery();
-
-      break;
-  }
-  return (stateBattery);
-}
 
 /********************************************************************
  * functions that test different conditions
@@ -232,9 +96,7 @@ int fsmBatteryMeter(){
 // Function that detects if there is an obstacle in front of robot
 int isCollision()
 {
-  float input_voltage = (float) analogRead(BUTTON_CENTER);
-  //Serial.println(input_voltage);
-  if(input_voltage >= 100){
+  if(5 >= 100){
     return true;
     }
   else {
@@ -285,7 +147,6 @@ void doDriveStraight(int enable)
   if (enable==TRUE) {
    spinMotor(TOP_SPEED, MOTOR_R_EN, MOTOR_R_A, MOTOR_R_B);
    spinMotor(TOP_SPEED, MOTOR_L_EN, MOTOR_L_A, MOTOR_L_B);
-
   }
   else {
   }
@@ -303,4 +164,3 @@ void doStopRobot(int enable)
     doDriveStraight(TRUE);
   }
 }
-
